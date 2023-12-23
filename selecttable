@@ -1,0 +1,136 @@
+#! /usr/bin/bash
+export LC_COLLATE=C
+shopt -s extglob
+#set -x
+#cat /etc/passwd > ~/DB_Bash/iti/kemo
+: <<COMMENT
+COMMENT
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color 
+clear
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+
+#echo "in select script" 
+file="$1"
+file_meta="$file-meta"
+#cat $1-meta
+data_file=$file
+columns=($(awk -F: '{print $1}' "$file_meta"))
+
+my_string=""
+colo_name=""
+av_column=""
+for index in "${!columns[@]}"; do
+       # echo "$((index + 1)). ${columns[$index]}"
+        my_string+="${columns[$index]}:"
+         av_column+="  $((index + 1)) ). ${columns[$index]}  "
+    done
+display_column() {
+
+   #header=$(head -n 1 "$data_file")  # Get the header (first line)
+   # IFS=':' read -ra columns <<< "$header"  # Split header into an array
+
+    echo -e "Available Columns: \n"
+     
+  echo -en " ${BLUE} $av_column ${NC} \n "
+    read -p "Enter the column number to display: " column_number
+    echo -e "\n"
+    column_number=$((column_number - 1))  # Adjust to array index
+
+    if (( column_number >= 0 )) && (( column_number < ${#columns[@]} )); then
+        selected_column="${columns[$column_number]}"
+        echo  -en "${YELLOW}'$selected_column' ${NC} \n "
+    
+        cut -d ':' -f $((column_number + 1)) "$data_file" | tail -n +2
+    else
+        echo "Invalid column number."
+    fi
+}
+############################## Row filter
+display_data() {
+   # header=$(head -n 1 "$data_file")
+    #IFS=':' read -ra columns <<< "$header"  # Split header into an array
+
+    echo -e "Available Columns: \n"
+   echo -en " ${BLUE} $av_column ${NC} \n "
+   # read -p "Enter column name: " column_name
+read -p "Enter the column number to display: " column_number
+echo -e "\n"
+column_number=$((column_number - 1)) 
+
+ if (( column_number >= 0 )) && (( column_number < ${#columns[@]} )); then
+        selected_column="${columns[$column_number]}"
+        #echo "Data under '$selected_column' column:"
+        #echo  -en "${YELLOW}' ' ${NC} \n "
+read -p "Enter value to filter $selected_column : " filter_value
+echo -e "\n"
+ #echo "Matching Data:"
+  
+col=$((column_number + 1)) 
+
+
+
+
+# echo "rows is done >>>>>>>>>>>>"
+
+#cut -d: -f"$col" $data_file  | sed -n '\|^'"$filter_value"'|p'
+#awk -v col="$col" -v val="$filter_value" -F: "\$col == val" "$data_file"
+echo   -en "${YELLOW}$my_string ${NC} \n"
+awk -v col="$col" -v val="$filter_value" -F: "\$col ~ (\"^\"val) || \$col ~ val" "$data_file"
+
+
+
+        
+    else
+       # echo "Invalid column number."
+ echo -en " ${RED} Invalid column number ${NC} \n "
+    fi
+
+
+
+
+
+
+
+
+    
+
+   
+}
+
+
+
+
+echo -en " enter choice >> \n " 
+PS3=" enter your choice and 4 for quit  "
+select choic in "all data" "columns " "rows" "quit"
+do
+case $REPLY in
+
+    1) echo "1"
+       echo   -en "${YELLOW}$my_string ${NC} \n"
+        cat $data_file
+         continue
+    ;;
+    2) display_column
+       continue  
+         
+    ;;
+    3) display_data
+        continue
+    ;;
+  4)
+                echo " EXITING>>>> "
+                break 
+                ;;
+            *) echo "Invalid option $REPLY";;
+
+esac
+
+
+
+done
+

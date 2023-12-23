@@ -1,0 +1,175 @@
+#! /usr/bin/bash
+export LC_COLLATE=C
+shopt -s extglob
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color 
+clear
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+#echo "in update script"
+echo -en " update $1 table >> \n "
+file=$1
+#######################
+file_meta="$file-meta"
+################################
+columns=($(awk -F: '{print $1}' "$file_meta"))
+
+
+######################3333
+
+type=($(awk -F: '{print $2}' "$file_meta"))
+fk=($(awk -F: '{print $1}' "$file"))
+array_length=${#columns[@]}
+###########################3
+data_file="$file"
+
+############################## Row filter
+
+my_string=""
+colo_name=""
+av_column=""
+for index in "${!columns[@]}"; do
+       # echo "$((index + 1)). ${columns[$index]}"
+        my_string+="${columns[$index]}:"
+         av_column+="  $((index + 1)) ). ${columns[$index]}  "
+    done
+update_data() {
+   # header=$(head -n 1 "$data_file")
+    #IFS=':' read -ra columns <<< "$header"  # Split header into an array
+
+echo -e "Available Columns: \n"
+   
+echo -en " ${BLUE} $av_column ${NC} \n "
+
+
+   # read -p "Enter column name: " column_name
+read -p "Enter the column number to filter basid on  it: " column_number
+echo -e "\n "
+read -p "Enter the column number you want  to  update  it: " updatedcol_number
+column_number=$((column_number - 1)) 
+updatedcol_number=$((updatedcol_number - 1)) 
+
+ if (( column_number >= 0 )) && (( column_number < ${#columns[@]} )) && (( updatedcol_number >= 0 )) && (( updatedcol_number < ${#columns[@]} )) ; then
+        selected_column="${columns[$column_number]}"
+        selected_updat_column="${columns[$updatedcol_number]}"
+        #echo "Data under '$selected_column' column: will be deleted "
+read -p "Enter value of $selected_column to filter it   : " filter_value
+
+#read -p "Enter the old value you want to change it : " old_value
+
+for (( i=0; i<1; i++ ))
+do
+			read -p "Enter the new value  you want to pdate it in $selected_updat_column column : " new_value
+
+			############### prevent user enter  value conatain :
+			if [[ $new_value == *":"* ]]; then
+			  #  echo "Error: Input contains the ':' character, which is not allowed."
+                            echo -en " ${RED}Error: Input contains the ':' character, which is not allowed. ${NC} "
+				((i--))
+				continue
+			fi
+
+			##############################################3
+			###################### check  empty value
+			value_trimmed="$(echo -e "${new_value}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+			if [ -z "$value_trimmed" ]; then
+			   # echo "Empty value or contains only spaces not available please enter real data."
+                             echo -en " ${RED}Empty value or contains only spaces not available please enter real data. ${NC} "
+			    ((i--))
+			     continue
+			fi
+			#######################################3
+			############## check FK
+			if [[ $column_number -eq 0 ]]; then
+			flag=1
+					       for val in "${fk[@]}"; do
+						    if [[ "$val" == "$new_value" ]]; then
+					#echo "value  '$new_value' already exists. Enter a different unique value."
+                                            echo -en " ${RED}value  '$new_value' already exists. Enter a different unique value. this primary key column ${NC} "
+							((i--))
+						         flag=0   
+						        break
+						    fi
+					       done
+
+
+
+			     if [[ $flag -eq 0 ]]; then
+
+				   continue
+
+			     fi
+			fi
+			############### check valid number
+			if [[  ${type[updatedcol_number]} = "integer" ]]; then
+				if [[ ! $new_value =~ ^-?[0-9]+(\.[0-9]+)?$ ]]; then
+				    #echo "please enter valid number the data type of this column is integer"
+                                   echo -en " ${RED}please enter valid number the data type of this column is integer ${NC} "
+				      ((i--))
+					continue
+				fi
+			 
+			fi
+
+			#echo " valid input dddddddd $new_value"
+			colo=$((column_number + 1)) 
+			update_colo=$((updatedcol_number + 1)) 
+
+			####################
+			    awk -v filter_col="$colo" -v filter_val="$filter_value" -v update_col="$update_colo" -v new_val="$new_value" -F':' 'BEGIN {OFS=":"} $filter_col == filter_val { $update_col = new_val } 1' "$data_file"> temp_passwd && mv temp_passwd "$data_file"
+
+			#####################3
+
+done
+ 
+  
+
+
+
+
+    # echo "rows  update is done >>>>>>>>>>>>"
+echo  -en "${GREEN} Data updated  successfully! >> $final_text ${NC}"
+
+
+
+        
+    else
+        #echo "Invalid column number may be filter column or updated column."
+        echo -en " ${RED} Invalid column number may be filter column or updated column failed update  ${NC} \n "
+    fi
+ 
+}
+
+
+
+
+#echo  -en " enter choice \n"
+PS3="enter choice >>"
+select choic in " update data with filter "  "quit"
+
+do
+
+case $REPLY in
+
+    1) 
+              
+      update_data
+        continue
+
+    ;;
+  2)
+                break  
+                ;;
+  *) echo -en " ${RED}Invalid option $REPLY ${NC}" 
+		continue
+		;;
+
+esac
+
+
+
+done

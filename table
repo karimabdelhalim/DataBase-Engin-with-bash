@@ -1,0 +1,171 @@
+#! /usr/bin/bash
+
+export LC_COLLATE=C
+shopt -s extglob 
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color 
+
+validate_folder_name() {
+    local folder_name=$1
+    local pattern="^[a-zA-Z][a-zA-Z0-9_]*$"
+
+    if [[ ! $folder_name =~ $pattern ]]; then
+        #echo "Invalid folder name! Folder names should not contain spaces and should start with a letter, followed by letters, numbers, or underscores."
+        return 1
+    else
+      #  echo "Valid folder name: $folder_name"
+        return 0
+    fi
+}
+
+
+database=$1 
+path=$2/$1
+
+clear
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+echo -en "${BLUE}enter the number of column :  you can enter  Ctrl + C to exit from any operation ${NC}\n"
+echo -en "${YELLOW} enter your choice \n ${NC}"
+#####################33 menue array
+
+ options=("Create Table" "Insert Table" "list Tables" "drop Tables" "Select From Table" "Update Table " "Delete From Table" "Quit")
+###########################################
+
+
+TBav_column=""
+for index in "${!options[@]}"; do
+       # echo "$((index + 1)). ${columns[$index]}"
+        #my_string+="${columns[$index]}:"
+         TBav_column+="  $((index + 1)) ). ${options[$index]}  "
+    done
+PS3="in table $1  chose from menue $TBav_column >>"
+######################3
+select  variable2 in "${options[@]}"
+do
+#echo  $variable2
+#echo  $REPLY
+case $REPLY in
+    1) 
+          read -p " Please Enter table Name you want to creat it : " name 
+                         # Check Name of table using Regex
+			 validate_folder_name "$name"
+			 if [ $? -eq 0 ]; then
+		                      if [ -e $path/$name  ] ; then
+		                         echo -en  "${GREEN} this table is already exist :: ${NC} "
+		                      else
+#===========================================================>>>>>>>>
+                                        source createtable $name 
+
+                                            break
+#===========================================================>>>>>>>>
+		                           # touch $name
+		                          fi 
+			else 
+			echo -en "${RED}in valid file name${NC} \n "
+		        fi
+                         PS3="in table $1  chose from menue $TBav_column >>"
+                         continue 
+	      
+		    #echo "Create Table"
+    ;;
+    2) 
+
+     
+         read -p " Please Enter table Name to insert  to it : " name 
+                         # Check Name of table using Regex
+		
+		
+                   if [ -e $path/$name ] ; then
+              # echo -en  "${GREEN} this table is already exist :: ${NC}"                        
+                source inserttable $path/$name
+                 PS3="in table $1  chose from menue $TBav_column >>"
+                   else
+                   
+              echo -en "${RED}that table not exist${NC}  \n "
+                   continue
+                   fi 
+                  PS3="in table $1  chose from menue $TBav_column >>"
+                  continue 
+		
+      
+
+         
+                #echo "2"
+    ;; 
+    3) 
+            # ls
+find . -type f ! -name "*-meta" -exec basename {} \;
+              continue
+               #echo "3"
+               
+    ;;
+    4) 
+                               read -p " Please Enter table Name you want to remove  : " name 
+                         # Check Name of table using Regex
+
+		
+                              if [ -f $path/$name ] ; then
+                                 rm -r $path/$name 
+                                 rm -r $path/$name-meta
+                                echo -en "${GREEN}  succesfully removed ${NC} "
+                              else
+                                     echo -en "${RED} this file does not exist  ${NC} "
+                                  fi 
+		
+#100
+
+    ;;
+    5) 
+           read -p " Please Enter table Name you want to select it  : " name 
+           if [ -f $path/$name ] ; then
+              #echo " this table is already exist ::"
+               source selecttable "$path/$name"
+               PS3="in table $1  chose from menue $TBav_column >>"
+	   else
+            echo  -en "${RED}this file does not exist ${NC}"
+            fi
+              PS3="in table $1  chose from menue $TBav_column >>"
+              continue 
+    ;;
+    6) 
+           read -p " Please Enter table Name you want to update  it  : " name 
+           if [ -f $path/$name ] ; then
+              #echo " this table is already exist ::"
+             source  updatetable "$path/$name"
+             
+	   else
+            echo  -en "${RED}this file does not exist ${NC}"
+            fi  
+              PS3="in table $1  chose from menue $TBav_column >>"
+              continue     
+		    ;;
+   7) 
+
+            read -p " Please Enter table Name you want to delete  it  : " name 
+           if [ -f $path/$name ] ; then
+              #echo " this table is already exist ::"
+             source  removetable "$path/$name"
+             
+	   else
+           echo  -en "${RED}this file does not exist ${NC}"
+            fi  
+              PS3="in table $1  chose from menue $TBav_column >>"
+              continue 
+
+
+
+
+	 echo "7"    ;;
+	8) echo "EXIT......>>>>" 
+        break
+         ;;
+              
+	 *)  echo  -en "${RED} invalid  choice ${NC}"
+	continue 
+	;;
+	esac
+done 

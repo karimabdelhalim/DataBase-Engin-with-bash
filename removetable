@@ -1,0 +1,139 @@
+#! /usr/bin/bash
+export LC_COLLATE=C
+shopt -s extglob
+
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color 
+clear
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+######################
+file="$1"
+file_meta="$file-meta"
+#cat $1-meta
+data_file=$file
+columns=($(awk -F: '{print $1}' "$file_meta"))
+
+my_string=""
+colo_name=""
+av_column=""
+for index in "${!columns[@]}"; do
+       # echo "$((index + 1)). ${columns[$index]}"
+        my_string+="${columns[$index]}:"
+         av_column+="  $((index + 1)) ). ${columns[$index]}  "
+    done
+##################33
+#columns=($(awk -F: '{print $1}' ~/DB_Bash/iti/kemo_meta))
+#data_file=~/DB_Bash/iti/kemo
+delet_column() {
+   # header=$(head -n 1 "$data_file")  # Get the header (first line)
+   # IFS=':' read -ra columns <<< "$header"  # Split header into an array
+
+    echo -en  "Available Columns: \n"
+     echo -en " ${BLUE} $av_column ${NC} \n "
+    
+
+    read -p "Enter the column number to delet it: " column_number
+    column_number=$((column_number - 1))  # Adjust to array index
+
+    if (( column_number >= 0 )) && (( column_number < ${#columns[@]} )); then
+        selected_column="${columns[$column_number]}"
+        echo -en "${GREEN}Data under '$selected_column' column will be deleted : ${NC}"
+        #cut -d ':' -f $((column_number + 1)) "$data_file" | tail -n +2
+colo=$((column_number + 1)) 
+awk -v col="$colo" 'BEGIN {FS=OFS=":"} {for (i = col; i < NF; i++) $i = $(i+1); NF--}1' "$data_file" > temp && mv temp "$data_file"
+      
+echo  -en "${GREEN} $selected_column column  deleted successfully ${NC}"
+
+    else
+        echo "Invalid column number."
+               echo -en "${RED}Invalid column number ${NC}"
+    fi
+}
+############################## Row filter
+delet_data() {
+   # header=$(head -n 1 "$data_file")
+    #IFS=':' read -ra columns <<< "$header"  # Split header into an array
+
+       echo -en  "Available Columns: \n"
+    echo -en " ${BLUE} $av_column ${NC} \n "
+
+
+
+   # read -p "Enter column name: " column_name
+read -p "Enter the column number to display: " column_number
+column_number=$((column_number - 1)) 
+
+ if (( column_number >= 0 )) && (( column_number < ${#columns[@]} )); then
+        selected_column="${columns[$column_number]}"
+        #echo "Data under '$selected_column' column: will be deleted "
+read -p "Enter value to filter deletion : " filter_value
+echo  -en " \n Data under '$selected_column' that have vakue $filter_value: will be deleted "
+
+   # awk -v col="$selected_column" -v val="$filter_value" -F ':' '{
+    #    if ($col == $val) {
+        #    print $0
+    #    }
+   # }' "$data_file"
+colo=$((column_number + 1)) 
+
+
+
+
+#grep "$filter_value" $data_file | cut -d: -f$col
+#cut -d: -f"$col" $data_file  | sed -n "/^$filter_value/p"
+awk -v val="$filter_value" -v col="$colo" -F':' '$col != val' "$data_file" > temp && mv temp "$data_file"
+echo  -en "${GREEN} Data deleted successfully ${NC}"
+
+        
+    else
+        echo "Invalid column number."
+    fi
+
+
+
+
+
+
+
+
+    
+
+   
+}
+
+
+
+
+PS3=" enter choice >>"
+select choic in " delete all data" " delete columns " " delete rows" "quit"
+do
+case $REPLY in
+
+    1) echo "1"
+        echo -n "" >  $data_file
+         continue 
+    ;;
+    2) delet_column
+       continue 
+         
+    ;;
+    3) delet_data
+        continue
+    ;;
+  4)
+                echo " EXITING>>>> "
+                break
+                ;;
+            *) echo "Invalid option $REPLY"
+		continue
+		;;
+
+esac
+
+
+
+done

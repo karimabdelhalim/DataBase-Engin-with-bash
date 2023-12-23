@@ -1,0 +1,166 @@
+#! /usr/bin/bash
+
+export LC_COLLATE=C
+shopt -s extglob 
+
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color 
+
+clear
+
+#14-------------------------------------------- function check valid dbname
+validate_folder_name() {
+    local folder_name=$1
+    local pattern="^[a-zA-Z][a-zA-Z0-9_]*$"
+
+    if [[ ! $folder_name =~ $pattern ]]; then
+        #echo "Invalid folder name! Folder names should not contain spaces and should start with a letter, followed by letters, numbers, or underscores."
+        return 1
+    else
+      #  echo "Valid folder name: $folder_name"
+        return 0
+    fi
+}
+
+#-------------------------------------------- function check valid dbname
+#--29--------------------- check folder
+
+if [ -d $HOME/DB_Bash ]  ; then  
+    cd $HOME/DB_Bash 
+
+else 
+    mkdir $HOME/DB_Bash 
+    cd $HOME/DB_Bash 
+fi
+export path=$HOME/DB_Bash
+#----------------------- check folder
+# PWD ---> $HOME/DB_Bash  
+
+####################################### menue array
+
+
+
+
+options=("Create DB" "Connect DB" "list DB" "Remove DB" "Quit")
+
+
+
+
+
+my_string=""
+colo_name=""
+DBav_column=""
+for index in "${!options[@]}"; do
+       # echo "$((index + 1)). ${columns[$index]}"
+        #my_string+="${columns[$index]}:"
+         DBav_column+="  $((index + 1)) ). ${options[$index]}  "
+    done
+
+
+
+#########################################33
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+wel_data="you are now in $PWD as Data Base engine  menue \n enter your choice from menu $DBav_column "
+PS3=" $wel_data  >>"
+ echo -en "${BLUE}enter the number of column :  you can enter  Ctrl + C to exit from any operation ${NC}\n"
+echo -en "${YELLOW} enter your choice \n ${NC}"
+
+#####################################
+
+
+
+select  variable in "${options[@]}"
+do 
+    #echo $variable
+    case $variable in 
+
+
+        "Create DB") 
+            read -p " Please Enter DB Name : " name  #Start Number ??  Space  Special Character 
+            #53 Check Name of DB using Regex
+                        # Check Name of DB using Regex
+		validate_folder_name "$name"
+		if [ $? -eq 0 ]; then
+                         if [ -d $path/$name ] ; then
+				# echo "this is name is already exit ::"
+                                 echo -en "${RED}this is name is already exit :: ${NC} \n  "
+			 else
+				 mkdir $name 
+		         fi
+            else
+                 echo -en "${RED} invalid  Data Base Name ${NC}  \n"
+            fi
+                  PS3=" $wel_data  >>"
+                continue  
+                
+        ;;
+
+
+
+        "Connect DB") 
+            read -p " Please Enter DB Name : " name 
+                         # Check Name of DB using Regex
+		validate_folder_name "$name"
+		if [ $? -eq 0 ]; then
+                               if [ -d $path/$name ] ; then
+			       cd $name 
+			       source table $name $path
+			    else
+
+                               echo -en "${RED} Error no such DB name ${NC} \n "
+			    fi
+            else
+           # 86 echo " invalid  Data Base Name"
+             echo -en "${RED} invalid  Data Base Name ${NC} \n"
+            fi
+                PS3=" $wel_data  >>"
+                continue	    
+        ;; 
+
+
+
+        "list DB" ) 
+           # ls -F | grep /
+             #ls -d */
+              ls -F | grep / | sed 's/\///'
+               PS3=" $wel_data  >>"
+                continue
+
+        ;; 
+
+
+
+
+        "Remove DB" ) 
+            read -p " Please Enter DB Name : " name 
+            # 109 Check Name of DB using Regex
+		
+
+                             if [ -d $path/$name ] ; then
+				rm -ir $name
+                             echo -en "${GREEN} $name reoved successfully  ${NC} \n "
+			    else
+			       #echo "Error no such DB name "
+                       echo -en "${RED} Error no such DB name ${NC} \n "
+			    fi
+            
+                PS3=" $wel_data  >>"
+                continue
+			    
+        ;;
+"Quit")   echo  -en "exit from data base engin...........>>>> \n"  
+  
+break
+;;
+
+        *)  echo -en "${RED} in valid choice ${NC} \n"
+        continue
+     ;;
+    esac
+
+done 
+

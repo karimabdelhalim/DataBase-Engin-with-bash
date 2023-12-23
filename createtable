@@ -1,0 +1,202 @@
+#! /usr/bin/bash
+export LC_COLLATE=C
+shopt -s extglob
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+clear
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+echo -en " create  new table $1 >>"
+for (( i=0; i<1; i++ ))
+do
+printf "\n"
+		#echo "enter the number of column :  you can enter  Ctrl + C to exit"
+                 echo -en "${BLUE}enter the number of column :  you can enter  Ctrl + C to exit from any operation ${NC}\n"
+		read num_items
+
+		if ! [[ $num_items =~ ^[1-9][0-9]*$ ]]; then
+
+		#echo "Error: Please enter a valid positive number greater than 0."
+		echo -en "${RED}Error: Please enter a valid positive number greater than 0.${NC}\n"
+                
+		    ((i--))
+	            continue
+		fi
+
+done
+
+
+## Initialize an empty array
+
+#declare -A my_assoc_array
+
+column_name=()
+data_type=()
+
+
+echo -e n "you will enter the column name  then choose the data type of column \n"
+echo -en "${BLUE} NOTE : : > the first column by default is primary key  is not null and uniqe ${NC} \n"
+printf "\n"
+# Loop to take input for each item
+for (( i=0; i<$num_items; i++ ))
+do
+    #echo -en "Enter  the column name for column  $((i+1)): \n "
+    #read item_value
+    
+    read -p "Enter column $((i+1)) name  :>> " key
+
+
+	#if [ ${my_assoc_array[$key]+_} ]; then
+		#echo "Key '$key' already exists. Enter a different key."
+          #  echo -en "${RED}column  '$key' already exists. Enter a different column name .${NC}"
+
+         #       ((i--))
+	#	continue
+                
+	#fi
+######################################
+flago=1
+for val in "${column_name[@]}"; do
+			if [[ "$val" == "$key" ]]; then
+			echo -en " ${RED}value  '$key' already exists. Enter a different unique value. ${NC} \n "
+			
+			flago=0   
+			 break
+			 fi
+done
+
+
+if [[ $flago -eq 0 ]]; then
+            ((i--))
+	    continue
+
+fi
+#########################################
+
+############### prevent user enter  value conatain :
+if [[ $key == *":"* ]]; then
+    echo "Error: Input contains the ':' character, which is not allowed."
+
+echo -e "${RED}Error: column name  contains the ':' character, which is not allowed.${NC}"
+
+        ((i--))
+        continue
+fi
+
+##############################################3
+
+ if [[ ! "$key" =~ ^[a-zA-Z_][a-zA-Z0-9_]*$ ]]; then
+        echo "Invalid key format. Key should start with a letter or underscore, and can contain letters, numbers, and underscores."
+
+echo -en "${RED}Invalid name  format. name should start with a letter or underscore, and can contain letters, numbers, and underscores.${NC}"
+
+         ((i--))
+        continue
+    fi
+
+
+
+
+#echo -en "Select the data type of $key: "
+    options=("integer" "string" "Quit")
+xflag=1
+
+while true ;
+while_repeat=1
+echo -en "Select the data type of $key: \n "
+do
+    select opt in "${options[@]}"
+    do
+  
+        case $opt in
+            "integer")
+                value="integer"
+             # my_assoc_array[$key]=$value
+               column_name+=("$key") 
+                data_type+=("$value")
+                break
+                ;;
+            "string")
+                value="string"
+             # my_assoc_array[$key]=$value
+             column_name+=("$key") 
+                data_type+=("$value")
+                break
+                ;;
+            "Quit")
+                echo -en "${RED} this column didn't inserted ${NC} \n"
+                      
+                    xflag=0
+                      break
+                ;;
+            *) echo -en " ${RED} Invalid option $REPLY  ${NC} \n "
+                 while_repeat=0
+                  break ;;
+        esac
+    done
+if [[ $while_repeat -eq 0 ]]; then
+         
+	 continue
+fi
+
+break
+done
+	if [[ $xflag -eq 0 ]]; then
+         ((i--))
+	 continue
+	fi
+
+
+
+
+    #read -p "Enter value for $key: " value
+    #my_array[$i]=$item_value
+   #####>>>>>>>>>>> my_assoc_array[$key]=$value
+
+
+done
+
+
+if [ ${#column_name[@]} -eq 0 ]; then
+    #echo "the table you try to created is empty ."
+   echo -en "${RED}the table you try to created is empty and you failed to create table .${NC}"
+
+    exit 1
+else  
+ touch $1
+ touch "$1-meta"
+    echo -en "${GREEN}your successfully create table $1 ${NC} \n "
+####################333
+
+for ((i = 0; i < ${#column_name[@]}; i++)); 
+do
+    echo "${column_name[i]}:${data_type[i]}" >> "$1-meta"
+done
+
+
+######################3
+
+
+
+
+#PS3="Select the data type of $key: "
+break
+
+fi
+
+
+
+#for k in "${!my_assoc_array[@]}"
+#do
+ #   echo " $k: ${my_assoc_array[$k]}" >> "$1-meta"
+#done
+
+
+
+
+
+
