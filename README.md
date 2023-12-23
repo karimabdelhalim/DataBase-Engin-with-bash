@@ -21,17 +21,17 @@
 + Drop Table
 + Select from Table
 
-     * select all data
-      * select specific columns 
-    * select row
+       * select all data
+       * select specific columns 
+       * select row
 + Delete Data from Table
 
      * Delete All
      * Delete Column
-    * Delete  Row
+     * Delete  Row
 ## Available data types
 + Integer
 + String
 ### how to run  project
-*** run the script  DB_eng
+*** run the script  DB_eng ***
          
