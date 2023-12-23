@@ -3,40 +3,35 @@
 ## Database engine using bash script to handle simple tasks for data storage and retrieval
 
 
- ## **FEATURE**
- ### *** Data Base Operation : ***
+ ## FEATURE
+ ###  Data Base Operation :
 
 + List Databases
 + Connect and use Database
  + Create Database
  + Delete Database
 
- ### *** Table  Operation : ***
-+List Tables
+ ###  Table  Operation : 
++ List Tables
 
 + Create New Table
 
 + Insert Data Into Table
 
 + Drop Table
- 
-data base  engine using bash script 
- to run this scripts  you shoud run file DB_eng as main file 
- when connect to data base  we go to file table script that handel table operation
- ######################
- 
- in table script  when we want  creat table we go to creattable file that handel creat table operation
++ Select from Table
 
-###########33
- file inserttable handel insert operation
+     * select all data
+      * select specific columns 
+    * select row
++ Delete Data from Table
 
- ##############333
- file selecttable handel selection operation 
-
- ####################333
- file updatetable handel update operation
-
-###################3333
- file delet handel deltion operation
- i hope  my work be wll  
-  thanks eng mina
+     * Delete All
+     * Delete Column
+    * Delete  Row
+## Available data types
++ Integer
++ String
+### how to run  project
+*** run the script  DB_eng
+         
