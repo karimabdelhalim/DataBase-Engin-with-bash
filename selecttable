@@ -43,8 +43,9 @@ display_column() {
     if (( column_number >= 0 )) && (( column_number < ${#columns[@]} )); then
         selected_column="${columns[$column_number]}"
         echo  -en "${YELLOW}'$selected_column' ${NC} \n "
-    
-        cut -d ':' -f $((column_number + 1)) "$data_file" | tail -n +2
+    echo -en "${GREEN}========================================================================================= ${NC}\n "
+        cut -d ':' -f $((column_number + 1)) "$data_file" | tail -n +1
+echo -en "${GREEN}========================================================================================= ${NC}\n "
     else
         echo "Invalid column number."
     fi
@@ -78,11 +79,12 @@ col=$((column_number + 1))
 
 #cut -d: -f"$col" $data_file  | sed -n '\|^'"$filter_value"'|p'
 #awk -v col="$col" -v val="$filter_value" -F: "\$col == val" "$data_file"
+echo -en "${GREEN}========================================================================================= ${NC}\n "
 echo   -en "${YELLOW}$my_string ${NC} \n"
 awk -v col="$col" -v val="$filter_value" -F: "\$col ~ (\"^\"val) || \$col ~ val" "$data_file"
 
 
-
+echo -en "${GREEN}========================================================================================= ${NC}\n "
         
     else
        # echo "Invalid column number."
@@ -110,7 +112,8 @@ select choic in "all data" "columns " "rows" "quit"
 do
 case $REPLY in
 
-    1) echo "1"
+    1) 
+      echo -en "${GREEN}========================================================================================= ${NC}\n "
        echo   -en "${YELLOW}$my_string ${NC} \n"
         cat $data_file
          continue

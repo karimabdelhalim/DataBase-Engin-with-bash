@@ -7,7 +7,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
-
+PS3="in proces creating table   $1   >>"
 clear
 echo -en "${GREEN}========================================================================================= ${NC}\n "
 echo -en " create  new table $1 >>"
@@ -16,7 +16,8 @@ do
 printf "\n"
 		#echo "enter the number of column :  you can enter  Ctrl + C to exit"
                  echo -en "${BLUE}enter the number of column :  you can enter  Ctrl + C to exit from any operation ${NC}\n"
-		read num_items
+		
+                  read -p "Enter number of column >> " num_items
 
 		if ! [[ $num_items =~ ^[1-9][0-9]*$ ]]; then
 
@@ -107,7 +108,8 @@ xflag=1
 
 while true ;
 while_repeat=1
-echo -en "Select the data type of $key: \n "
+#echo -en "Select the data type of $key: \n "
+PS3="Select the data type of $key:  >>"
 do
     select opt in "${options[@]}"
     do

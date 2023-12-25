@@ -42,7 +42,7 @@ for index in "${!options[@]}"; do
         #my_string+="${columns[$index]}:"
          TBav_column+="  $((index + 1)) ). ${options[$index]}  "
     done
-PS3="in table $1  chose from menue $TBav_column >>"
+PS3="in data bae  $1  chose from menue >>"
 ######################3
 select  variable2 in "${options[@]}"
 do
@@ -55,17 +55,17 @@ case $REPLY in
 			 validate_folder_name "$name"
 			 if [ $? -eq 0 ]; then
 		                      if [ -e $path/$name  ] ; then
-		                         echo -en  "${GREEN} this table is already exist :: ${NC} "
+		                         echo -en  "${RED} this table is already exist :: ${NC} "
 		                      else
 #===========================================================>>>>>>>>
                                         source createtable $name 
 
-                                            break
+                                            continue
 #===========================================================>>>>>>>>
 		                           # touch $name
 		                          fi 
 			else 
-			echo -en "${RED}in valid file name${NC} \n "
+			echo -en "${RED}in valid table name${NC} \n "
 		        fi
                          PS3="in table $1  chose from menue $TBav_column >>"
                          continue 
@@ -80,13 +80,14 @@ case $REPLY in
 		
 		
                    if [ -e $path/$name ] ; then
-              # echo -en  "${GREEN} this table is already exist :: ${NC}"                        
-                source inserttable $path/$name
-                 PS3="in table $1  chose from menue $TBav_column >>"
-                   else
+			      # echo -en  "${GREEN} this table is already exist :: ${NC}"                        
+				source inserttable $path/$name
+				 PS3="in table $1  chose from menue $TBav_column >>"
+                            continue 
+		  else
                    
-              echo -en "${RED}that table not exist${NC}  \n "
-                   continue
+		      echo -en "${RED}that table not exist${NC}  \n "
+		           continue
                    fi 
                   PS3="in table $1  chose from menue $TBav_column >>"
                   continue 
@@ -98,7 +99,10 @@ case $REPLY in
     ;; 
     3) 
             # ls
+echo -en "${GREEN}========================================================================================= ${NC}\n "
 find . -type f ! -name "*-meta" -exec basename {} \;
+echo -en "${GREEN}========================================================================================= ${NC}\n "
+ PS3="in table $1  chose from menue $TBav_column >>"
               continue
                #echo "3"
                
@@ -115,6 +119,7 @@ find . -type f ! -name "*-meta" -exec basename {} \;
                               else
                                      echo -en "${RED} this file does not exist  ${NC} "
                                   fi 
+                               PS3="in table $1  chose from menue $TBav_column >>"
 		
 #100
 
@@ -159,9 +164,11 @@ find . -type f ! -name "*-meta" -exec basename {} \;
 
 
 
-	 echo "7"    ;;
-	8) echo "EXIT......>>>>" 
-        break
+	     ;;
+	8) echo "EXIT...... >>>>" 
+            PS3="you are in DataBase menu >>"
+              clear
+                 break
          ;;
               
 	 *)  echo  -en "${RED} invalid  choice ${NC}"

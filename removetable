@@ -113,7 +113,7 @@ select choic in " delete all data" " delete columns " " delete rows" "quit"
 do
 case $REPLY in
 
-    1) echo "1"
+    1) 
         echo -n "" >  $data_file
          continue 
     ;;

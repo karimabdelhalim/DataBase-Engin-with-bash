@@ -62,7 +62,7 @@ read -p "Enter value of $selected_column to filter it   : " filter_value
 
 for (( i=0; i<1; i++ ))
 do
-			read -p "Enter the new value  you want to pdate it in $selected_updat_column column : " new_value
+			read -p "Enter the new value  you want to update it in $selected_updat_column column : " new_value
 
 			############### prevent user enter  value conatain :
 			if [[ $new_value == *":"* ]]; then
@@ -84,7 +84,7 @@ do
 			fi
 			#######################################3
 			############## check FK
-			if [[ $column_number -eq 0 ]]; then
+			if [[ $updatedcol_number -eq 0 ]]; then
 			flag=1
 					       for val in "${fk[@]}"; do
 						    if [[ "$val" == "$new_value" ]]; then
@@ -129,10 +129,10 @@ done
   
 
 
-
+#$final_text
 
     # echo "rows  update is done >>>>>>>>>>>>"
-echo  -en "${GREEN} Data updated  successfully! >> $final_text ${NC}"
+echo  -en "${GREEN} Data updated    successfully! >>  ${NC}"
 
 
 

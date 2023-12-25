@@ -36,7 +36,7 @@ else
     mkdir $HOME/DB_Bash 
     cd $HOME/DB_Bash 
 fi
-export path=$HOME/DB_Bash
+export patho=$HOME/DB_Bash
 #----------------------- check folder
 # PWD ---> $HOME/DB_Bash  
 
@@ -45,7 +45,7 @@ export path=$HOME/DB_Bash
 
 
 
-options=("Create DB" "Connect DB" "list DB" "Remove DB" "Quit")
+options=("Create DataBase" "Connect DataBase" "list DataBase" "Remove DataBase" "Quit")
 
 
 
@@ -65,7 +65,7 @@ for index in "${!options[@]}"; do
 #########################################33
 echo -en "${GREEN}========================================================================================= ${NC}\n "
 wel_data="you are now in $PWD as Data Base engine  menue \n enter your choice from menu $DBav_column "
-PS3=" $wel_data  >>"
+PS3=" enter your choice  >>"
  echo -en "${BLUE}enter the number of column :  you can enter  Ctrl + C to exit from any operation ${NC}\n"
 echo -en "${YELLOW} enter your choice \n ${NC}"
 
@@ -79,17 +79,18 @@ do
     case $variable in 
 
 
-        "Create DB") 
+        "Create DataBase") 
             read -p " Please Enter DB Name : " name  #Start Number ??  Space  Special Character 
             #53 Check Name of DB using Regex
                         # Check Name of DB using Regex
 		validate_folder_name "$name"
 		if [ $? -eq 0 ]; then
-                         if [ -d $path/$name ] ; then
+                         if [ -d $patho/$name ] ; then
 				# echo "this is name is already exit ::"
                                  echo -en "${RED}this is name is already exit :: ${NC} \n  "
 			 else
 				 mkdir $name 
+                                echo -en "${GREEN} database $name created successfully ${NC}\n"
 		         fi
             else
                  echo -en "${RED} invalid  Data Base Name ${NC}  \n"
@@ -101,32 +102,32 @@ do
 
 
 
-        "Connect DB") 
+        "Connect DataBase") 
             read -p " Please Enter DB Name : " name 
                          # Check Name of DB using Regex
-		validate_folder_name "$name"
-		if [ $? -eq 0 ]; then
-                               if [ -d $path/$name ] ; then
-			       cd $name 
-			       source table $name $path
-			    else
+		
+                               if [ -d $patho/$name ] ; then
+				       cd $name 
+				       source table $name $patho
+                                                  cd ..
+			     else
 
-                               echo -en "${RED} Error no such DB name ${NC} \n "
+                                     echo -en "${RED} Error no such DB name ${NC} \n "
+                                    
 			    fi
-            else
-           # 86 echo " invalid  Data Base Name"
-             echo -en "${RED} invalid  Data Base Name ${NC} \n"
-            fi
+           
                 PS3=" $wel_data  >>"
-                continue	    
+                	    
         ;; 
 
 
 
-        "list DB" ) 
+        "list DataBase" ) 
            # ls -F | grep /
              #ls -d */
+          echo -en "${GREEN}========================================================================================= ${NC}\n "
               ls -F | grep / | sed 's/\///'
+echo -en "${GREEN}========================================================================================= ${NC}\n "
                PS3=" $wel_data  >>"
                 continue
 
@@ -135,12 +136,12 @@ do
 
 
 
-        "Remove DB" ) 
+        "Remove DataBase" ) 
             read -p " Please Enter DB Name : " name 
             # 109 Check Name of DB using Regex
 		
 
-                             if [ -d $path/$name ] ; then
+                             if [ -d $patho/$name ] ; then
 				rm -ir $name
                              echo -en "${GREEN} $name reoved successfully  ${NC} \n "
 			    else
